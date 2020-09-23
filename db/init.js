@@ -3,6 +3,7 @@ const {Sequelize, DataTypes} = require('sequelize');
 const sequelize = new Sequelize('College', 'root', 'root', {
   host: 'localhost',
   dialect: 'mariadb',
+  logging: false,
 });
 const Student = sequelize.define('Student', {
   RollNo: {
@@ -15,6 +16,7 @@ const Student = sequelize.define('Student', {
     allowNull: false,
   },
 });
+
 const Teacher = sequelize.define('Teacher', {
   TeacherId: {
     type: DataTypes.STRING,

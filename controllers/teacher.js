@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const {Department, Teacher} = require('../db/init.js');
 const {v4: uuidv4} = require('uuid');
 
+//#region Create
 const tinit = async (req, res) => {
   console.log(req.body);
   const [department] = await Department.findOrCreate({
@@ -18,14 +19,16 @@ const tinit = async (req, res) => {
     expiresIn: 60 * 60 * 24 * 365 * 4,
   });
   return res.json({
-    instruction: 'Use token in Authorisation header access your data',
-    token: token,
+    instruction: 'Use this token in Authorisation header to access your data',
+    token: 'Bearer ' + token,
   });
 };
+//#endregion
 
+//#region Read
 const tdeets = async (req, res) => {
   try {
-    const teeid = jwt.verify(
+    var teeid = jwt.verify(
       req.headers.authorization.substring(7),
       'studentdata123'
     );
@@ -38,5 +41,53 @@ const tdeets = async (req, res) => {
   const dept = await teacher.getDepartment();
   return res.json({teacher, dept});
 };
+//#endregion
 
-module.exports = {tinit, tdeets};
+//#region Update
+const tupdate = async (req, res) => {
+  console.log(req.headers);
+
+  try {
+    var teeid = jwt.verify(
+      req.headers.authorization.substring(7),
+      'studentdata123'
+    );
+  } catch (error) {
+    res.json(400, 'Invalid Token');
+  }
+  const teacher = await Teacher.findOne({
+    where: {TeacherId: teeid.TeacherId},
+  });
+  if (req.body.name) {
+    teacher.name = req.body.name;
+  }
+  if (req.body.subject) {
+    teacher.Subject = req.body.subject;
+  }
+  teacher.save();
+  console.log(teacher.toJSON());
+  const dept = await teacher.getDepartment();
+  return res.json({teacher, dept});
+};
+//#endregion
+
+//#region Delete
+const tdel = async (req, res) => {
+  console.log(req.headers);
+
+  try {
+    var teeid = jwt.verify(
+      req.headers.authorization.substring(7),
+      'studentdata123'
+    );
+  } catch (error) {
+    res.json(400, 'Invalid Token');
+  }
+  await Teacher.destroy({
+    where: {TeacherId: teeid.TeacherId},
+  });
+  return res.json('You are terminated');
+};
+//#endregion
+
+module.exports = {tinit, tdeets, tdel, tupdate};
