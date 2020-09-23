@@ -2,6 +2,7 @@
 
 This Web-App is basically built upon nodeJs Express and Sequelize ORM to maintain records of students and teachers
 Don't expect a lot of functionality this is just a PoC website
+I have created the react client and integrated with backend Pull Requests are welcome
 
 ## Open Endpoints
 
